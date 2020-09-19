@@ -1,0 +1,11 @@
+### get restaurants around the given coordinates
+
+GET {{baseUrl}}/geocode?lat=1.3521&lon=103.8198
+Accept: application/json
+user-key: {{apiKey}}
+
+### get restaurant details
+
+GET {{baseUrl}}/restaurant?res_id=16774318
+Accept: application/json
+user-key: {{apiKey}}
