@@ -12,12 +12,11 @@ class API {
 
   static final String host = 'developers.zomato.com/api/v2.1';
 
-  Uri endpointUri(Endpoint endpoint, Map<String, String> queryParameters) =>
-      Uri(
-          scheme: 'https',
-          host: host,
-          path: _path[endpoint],
-          queryParameters: queryParameters);
+  Uri endpointUri(Endpoint endpoint) => Uri(
+        scheme: 'https',
+        host: host,
+        path: _path[endpoint],
+      );
 
   static Map<Endpoint, String> _path = {
     Endpoint.geocode: 'geocode',
