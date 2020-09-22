@@ -10,7 +10,7 @@ class API {
 
   factory API.sandbox() => API(apiKey: APIKeys.zomatoSandboxKey);
 
-  static final String host = 'developers.zomato.com/api/v2.1';
+  static final String host = 'developers.zomato.com';
 
   Uri endpointUri(Endpoint endpoint) => Uri(
         scheme: 'https',
@@ -19,7 +19,7 @@ class API {
       );
 
   static Map<Endpoint, String> _path = {
-    Endpoint.geocode: 'geocode',
-    Endpoint.restaurant: 'restaurant'
+    Endpoint.geocode: 'api/v2.1/geocode',
+    Endpoint.restaurant: 'api/v2.1/restaurant'
   };
 }
