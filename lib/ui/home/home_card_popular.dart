@@ -1,15 +1,15 @@
 import 'package:adobe_xd/pinned.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:zomato/model/nearby_restaurants.dart';
+import 'package:zomato/model/fake_restaurant.dart';
 import 'package:zomato/ui/menu/svg.dart';
 
 
-class HomeCard extends StatelessWidget {
+class HomeCardPopular extends StatelessWidget {
   final Function onTap;
-  final NearbyRestaurants mRestaurant;
+  final RestaurantModel mRestaurant;
 
-  HomeCard({
+  HomeCardPopular({
     @required this.onTap,
     @required this.mRestaurant,
   });
@@ -103,7 +103,7 @@ class HomeCard extends StatelessWidget {
                             pinTop: true,
                             pinBottom: true,
                             child: SvgPicture.string(
-                              mRestaurant.restaurant.includeBogoOffers ? svg_v0r4hz : svg_lvs62u,
+                              mRestaurant.isLiked ? svg_v0r4hz : svg_lvs62u,
                               allowDrawingOutsideViewBox: true,
                               fit: BoxFit.fill,
                             ),
@@ -124,7 +124,7 @@ class HomeCard extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 52.5,
                   backgroundColor: Color(0xffd8d8d8),
-                  backgroundImage: NetworkImage('https://b.zmtcdn.com/data/pictures/8/16774318/b16e382e9f6696f911b600b7e5ca6839.jpg?output-format=webp'),
+                  backgroundImage: NetworkImage(mRestaurant.imageUrl),
                 ),
               ),
               Pinned.fromSize(
@@ -144,7 +144,7 @@ class HomeCard extends StatelessWidget {
                       pinBottom: true,
                       fixedHeight: true,
                       child: Text(
-                        mRestaurant.restaurant.name,
+                        mRestaurant.description,
                         style: TextStyle(
                           fontFamily: 'Montserrat-Regular',
                           fontSize: 10,
@@ -158,7 +158,7 @@ class HomeCard extends StatelessWidget {
                       size: Size(131.0, 69.0),
                       fixedHeight: true,
                       child: Text(
-                        '\$${mRestaurant.restaurant.priceRange}',
+                        '\$${mRestaurant.price}',
                         style: TextStyle(
                           fontFamily: 'Montserrat-SemiBold',
                           fontSize: 14,
@@ -172,7 +172,7 @@ class HomeCard extends StatelessWidget {
                       size: Size(131.0, 69.0),
                       fixedHeight: true,
                       child: Text(
-                        mRestaurant.restaurant.cuisines,
+                        mRestaurant.name,
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           fontSize: 14,

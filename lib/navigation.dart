@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:zomato/app/repositories/data_repository.dart';
 import 'package:zomato/app/services/api.dart';
 import 'package:zomato/app/services/api_service.dart';
-import 'package:zomato/model/nearby_restaurants.dart';
+import 'package:zomato/bloc/restaurants_bloc.dart';
 import 'package:zomato/ui/home/home.dart';
 import 'package:zomato/ui/menu/menu.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Nagigation extends StatefulWidget {
   @override
@@ -12,15 +13,9 @@ class Nagigation extends StatefulWidget {
 }
 
 class _NagigationState extends State<Nagigation> {
-  Future<void> getNearby() async {
-    final List<NearbyRestaurants> dataRepo =
-        await DataRepository(APIService(API.sandbox())).nearbyRestaurantAPI();
-  }
-
   @override
   void initState() {
     super.initState();
-    getNearby();
   }
 
   @override
@@ -34,9 +29,12 @@ class _NagigationState extends State<Nagigation> {
             child: Menu(),
           ),
           Expanded(
-            flex: 4,
-            child: HomeScreen(),
-          ),
+              flex: 4,
+              child: BlocProvider(
+                create: (context) =>
+                    RestaurantsBloc(DataRepository(APIService(API.sandbox()))),
+                child: HomeScreen(),
+              )),
         ],
       ),
     );
