@@ -4,6 +4,6 @@ class NearbyRestaurants {
   Restaurant restaurant;
 
   NearbyRestaurants.fromJson(Map<String, dynamic> json) {
-    restaurant = json['restaurant'];
+    restaurant = Restaurant.fromJson(json['restaurant']);
   }
 }
