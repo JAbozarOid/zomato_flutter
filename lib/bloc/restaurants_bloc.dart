@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:zomato/app/repositories/data_repository.dart';
 import 'package:zomato/model/nearby_restaurants.dart';
+import 'package:equatable/equatable.dart';
 
 part 'restaurants_event.dart';
 part 'restaurants_state.dart';
