@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 class HttpParam {
   HttpParamType type;
 
@@ -30,3 +31,12 @@ class HttpParam {
 
 enum HttpParamType { Body, Query }
 
+class BaseHttpResponse extends Equatable {
+  final int statusCode;
+  final Map<dynamic, dynamic> json;
+
+  BaseHttpResponse({this.statusCode, this.json});
+
+  @override
+  List<Object> get props => throw UnimplementedError();
+}

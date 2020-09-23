@@ -23,6 +23,13 @@ class RestaurantsLoaded extends RestaurantsState {
   List<Object> get props => [restaurants];
 }
 
+class RestaurantDetailLoaded extends RestaurantsState {
+  final Restaurant restaurantsDetails;
+  const RestaurantDetailLoaded(this.restaurantsDetails);
+  @override
+  List<Object> get props => [restaurantsDetails];
+}
+
 class RestauranstsError extends RestaurantsState {
   final String message;
   const RestauranstsError(this.message);
