@@ -5,8 +5,9 @@ abstract class RestaurantsEvent extends Equatable {
 }
 
 class GetNearbyRestaurants extends RestaurantsEvent {
-
-  const GetNearbyRestaurants();
+  final double lat;
+  final double lon;
+  const GetNearbyRestaurants(this.lat,this.lon);
 
   @override
   List<Object> get props => [];

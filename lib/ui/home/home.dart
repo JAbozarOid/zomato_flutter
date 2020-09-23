@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:zomato/bloc/bloc.dart';
 import 'package:zomato/model/fake_restaurant.dart';
 import 'package:zomato/model/nearby_restaurants.dart';
+import 'package:zomato/ui/detail/detail.dart';
+import 'package:zomato/ui/detail/detail_popular_fake.dart';
 import 'package:zomato/ui/home/home_card_popular.dart';
 import 'package:zomato/ui/home/home_view_all.dart';
 import 'home_card.dart';
@@ -9,6 +11,7 @@ import 'home_filter.dart';
 import 'home_list_title.dart';
 import 'home_title.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:location/location.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,16 +22,28 @@ class _HomeScreenState extends State<HomeScreen> {
   //List<RestaurantModel> nearYouList;
   List<RestaurantModel> popularList;
 
+  double _lat;
+  double _lon;
+
   void getNearbyRestaurants() async {
     final restaurantBloc = BlocProvider.of<RestaurantsBloc>(context);
-    restaurantBloc.add(GetNearbyRestaurants());
+    restaurantBloc.add(GetNearbyRestaurants(_lat, _lon));
   }
 
   @override
   void initState() {
     super.initState();
     _buildFakeData();
-    getNearbyRestaurants();
+
+    Location().getLocation().then(
+      (locationData) {
+        _lat = locationData.latitude;
+        _lon = locationData.longitude;
+        if ((_lat != null) && (_lon != null)) {
+          getNearbyRestaurants();
+        }
+      },
+    );
   }
 
   @override
@@ -68,13 +83,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           NearbyRestaurants mRestaurant =
                               state.restaurants[position];
                           return HomeCard(
-                            onTap: () => _onTapNearYou(mRestaurant),
+                            onTap: _onTapNearYou,
                             mRestaurant: mRestaurant,
                           );
                         },
                       );
                     } else if (state is RestauranstsError) {
-                      return Container();
+                      return Container(
+                        child: Text(state.message),
+                      );
                     }
                   },
                 ),
@@ -90,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, position) {
                 RestaurantModel mRestaurant = popularList[position];
                 return HomeCardPopular(
-                  onTap: () => _onTapPopular(mRestaurant),
+                  onTap: _onTapPopular,
                   mRestaurant: mRestaurant,
                 );
               },
@@ -110,9 +127,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _onTapNearYou(NearbyRestaurants mRestaurant) {}
+  void _onTapNearYou(NearbyRestaurants mRestaurant) async {
+    await Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+              value: BlocProvider.of<RestaurantsBloc>(context),
+              child: DetailScreen(
+                mRestaurant: mRestaurant,
+              ),
+            )));
+    getNearbyRestaurants();
+  }
 
-  void _onTapPopular(RestaurantModel mRestaurant) {}
+  void _onTapPopular(RestaurantModel mRestaurant) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => PopularDetailScreenFake(mRestaurant: mRestaurant,)));
+  }
 
   void _onTapViewAll() {}
 
