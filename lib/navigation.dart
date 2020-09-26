@@ -6,6 +6,10 @@ import 'package:zomato/bloc/restaurants_bloc.dart';
 import 'package:zomato/ui/home/home.dart';
 import 'package:zomato/ui/menu/menu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
+
+enum ConnectionState { disconnected, connected, loading }
 
 class Nagigation extends StatefulWidget {
   @override
@@ -13,9 +17,23 @@ class Nagigation extends StatefulWidget {
 }
 
 class _NagigationState extends State<Nagigation> {
+  var _onConnectionState = PublishSubject<ConnectionState>();
+
+  void checkNetworkConnection() async {
+    bool result = await DataConnectionChecker().hasConnection;
+    if (result == true) {
+      _onConnectionState.add(ConnectionState.connected);
+    } else {
+      _onConnectionState.add(ConnectionState.disconnected);
+      print(DataConnectionChecker().lastTryResults);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _onConnectionState.add(ConnectionState.loading);
+    checkNetworkConnection();
   }
 
   @override
@@ -30,11 +48,37 @@ class _NagigationState extends State<Nagigation> {
           ),
           Expanded(
               flex: 4,
-              child: BlocProvider(
-                create: (context) =>
-                    RestaurantsBloc(DataRepository(APIService(API.sandbox()))),
-                child: HomeScreen(),
-              )),
+              child: StreamBuilder<ConnectionState>(
+                  stream: _onConnectionState,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    switch (snapshot.data) {
+                      case ConnectionState.disconnected:
+                        return Center(
+                          child: Text(
+                            'Please check your network connection',
+                            style: TextStyle(fontSize: 18, color: Colors.red),
+                          ),
+                        );
+                        break;
+                      case ConnectionState.connected:
+                        return BlocProvider(
+                          create: (context) => RestaurantsBloc(
+                              DataRepository(APIService(API.sandbox()))),
+                          child: HomeScreen(),
+                        );
+                        break;
+                      case ConnectionState.loading:
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                        break;
+                    }
+                  })),
         ],
       ),
     );
