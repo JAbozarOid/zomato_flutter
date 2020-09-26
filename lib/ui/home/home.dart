@@ -46,22 +46,26 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     _permissionGranted = await location.hasPermission();
+
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
       _onLocationState.add(LocationState.deny);
-      if (_permissionGranted == PermissionStatus.granted) {
-        _onLocationState.add(LocationState.granted);
-        _locationData = await location.getLocation();
-        _lat = _locationData.latitude;
-        _lon = _locationData.longitude;
-        getNearbyRestaurants();
-      }
+    }
+    if (_permissionGranted == PermissionStatus.granted) {
+      _locationData = await location.getLocation();
+      _lat = _locationData.latitude;
+      _lon = _locationData.longitude;
+      getNearbyRestaurants();
+      _onLocationState.add(LocationState.granted);
+
     }
   }
 
   void getNearbyRestaurants() async {
     final restaurantBloc = BlocProvider.of<RestaurantsBloc>(context);
     restaurantBloc.add(GetNearbyRestaurants(_lat, _lon));
+
+    _onLocationState.add(LocationState.granted);
   }
 
   @override

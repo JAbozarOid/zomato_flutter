@@ -12,8 +12,8 @@ class DataRepository {
   Future<List<NearbyRestaurants>> nearbyRestaurantAPI(double lat,double lon) async {
 
     var param = HttpParam.body();
-    param.add("lat", lat);
-    param.add("lon", lon);
+    param.add("lat", 1.3521);
+    param.add("lon", 103.8198);
 
     return await apiService.getNearbyRestaurants(
         endpoint: Endpoint.geocode, param: param);
