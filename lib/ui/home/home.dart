@@ -12,6 +12,9 @@ import 'home_list_title.dart';
 import 'home_title.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:location/location.dart';
+import 'package:rxdart/rxdart.dart';
+
+enum LocationState { deny, granted, loading }
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -25,6 +28,37 @@ class _HomeScreenState extends State<HomeScreen> {
   double _lat;
   double _lon;
 
+  Location location = new Location();
+
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+  LocationData _locationData;
+
+  var _onLocationState = PublishSubject<LocationState>();
+
+  void getUserCurrentLocation() async {
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      _onLocationState.add(LocationState.deny);
+      if (_permissionGranted == PermissionStatus.granted) {
+        _onLocationState.add(LocationState.granted);
+        _locationData = await location.getLocation();
+        _lat = _locationData.latitude;
+        _lon = _locationData.longitude;
+        getNearbyRestaurants();
+      }
+    }
+  }
+
   void getNearbyRestaurants() async {
     final restaurantBloc = BlocProvider.of<RestaurantsBloc>(context);
     restaurantBloc.add(GetNearbyRestaurants(_lat, _lon));
@@ -33,17 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _onLocationState.add(LocationState.loading);
     _buildFakeData();
-
-    Location().getLocation().then(
-      (locationData) {
-        _lat = locationData.latitude;
-        _lon = locationData.longitude;
-        if ((_lat != null) && (_lon != null)) {
-          getNearbyRestaurants();
-        }
-      },
-    );
+    getUserCurrentLocation();
   }
 
   @override
@@ -62,40 +88,62 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
               flex: 4,
-              child: BlocListener<RestaurantsBloc, RestaurantsState>(
-                listener: (context, state) {
-                  if (state is RestauranstsError) {
-                    Scaffold.of(context)
-                        .showSnackBar(SnackBar(content: Text(state.message)));
-                  }
-                },
-                child: BlocBuilder<RestaurantsBloc, RestaurantsState>(
-                  builder: (context, state) {
-                    if (state is RestaurantsInitial) {
-                      return Container();
-                    } else if (state is RestaurantsLoading) {
+              child: StreamBuilder<LocationState>(
+                  stream: _onLocationState,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
                       return buildLoading();
-                    } else if (state is RestaurantsLoaded) {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: state.restaurants.length,
-                        itemBuilder: (context, position) {
-                          NearbyRestaurants mRestaurant =
-                              state.restaurants[position];
-                          return HomeCard(
-                            onTap: _onTapNearYou,
-                            mRestaurant: mRestaurant,
-                          );
-                        },
-                      );
-                    } else if (state is RestauranstsError) {
-                      return Container(
-                        child: Text(state.message),
-                      );
                     }
-                  },
-                ),
-              )),
+                    switch (snapshot.data) {
+                      case LocationState.deny:
+                        return Center(
+                          child: Text(
+                            'Need your current location for restaturant neaby you',
+                            style: TextStyle(fontSize: 12, color: Colors.red),
+                          ),
+                        );
+                        break;
+                      case LocationState.granted:
+                        return BlocListener<RestaurantsBloc, RestaurantsState>(
+                          listener: (context, state) {
+                            if (state is RestauranstsError) {
+                              Scaffold.of(context).showSnackBar(
+                                  SnackBar(content: Text(state.message)));
+                            }
+                          },
+                          child: BlocBuilder<RestaurantsBloc, RestaurantsState>(
+                            builder: (context, state) {
+                              if (state is RestaurantsInitial) {
+                                return Container();
+                              } else if (state is RestaurantsLoading) {
+                                return buildLoading();
+                              } else if (state is RestaurantsLoaded) {
+                                return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.restaurants.length,
+                                  itemBuilder: (context, position) {
+                                    NearbyRestaurants mRestaurant =
+                                        state.restaurants[position];
+                                    return HomeCard(
+                                      onTap: _onTapNearYou,
+                                      mRestaurant: mRestaurant,
+                                    );
+                                  },
+                                );
+                              } else if (state is RestauranstsError) {
+                                return Container(
+                                  child: Text(state.message),
+                                );
+                              }
+                            },
+                          ),
+                        );
+                        break;
+                      case LocationState.loading:
+                        return buildLoading();
+                        break;
+                    }
+                  })),
           HomeListTitle(
             title: 'Popular',
           ),
@@ -139,8 +187,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onTapPopular(RestaurantModel mRestaurant) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => PopularDetailScreenFake(mRestaurant: mRestaurant,)));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => PopularDetailScreenFake(
+              mRestaurant: mRestaurant,
+            )));
   }
 
   void _onTapViewAll() {}
