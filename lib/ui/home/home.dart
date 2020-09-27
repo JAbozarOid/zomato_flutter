@@ -137,8 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                 );
                               } else if (state is RestauranstsError) {
-                                return Container(
-                                  child: Text(state.message),
+                                return Center(
+                                  child: Text(state.message,style: TextStyle(color: Colors.red,fontWeight: FontWeight.w900),),
                                 );
                               }
                             },

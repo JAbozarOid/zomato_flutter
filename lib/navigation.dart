@@ -3,6 +3,7 @@ import 'package:zomato/app/repositories/data_repository.dart';
 import 'package:zomato/app/services/api.dart';
 import 'package:zomato/app/services/api_service.dart';
 import 'package:zomato/bloc/restaurants_bloc.dart';
+import 'package:zomato/ui/alert/show_alert_dialog.dart';
 import 'package:zomato/ui/home/home.dart';
 import 'package:zomato/ui/menu/menu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,11 @@ class _NagigationState extends State<Nagigation> {
       _onConnectionState.add(ConnectionState.connected);
     } else {
       _onConnectionState.add(ConnectionState.disconnected);
+      showAlertDialog(
+          context: context,
+          title: 'Connection Error',
+          content: 'Could not retrive data. Please try again later',
+          defaultActionText: 'OK');
       print(DataConnectionChecker().lastTryResults);
     }
   }
@@ -51,17 +57,13 @@ class _NagigationState extends State<Nagigation> {
               child: StreamBuilder<ConnectionState>(
                   stream: _onConnectionState,
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
                     switch (snapshot.data) {
                       case ConnectionState.disconnected:
                         return Center(
                           child: Text(
-                            'Please check your network connection',
-                            style: TextStyle(fontSize: 18, color: Colors.red),
+                            'Please check your Netwrok connection',
+                            style: TextStyle(
+                                color: Colors.red, fontWeight: FontWeight.w900),
                           ),
                         );
                         break;
@@ -78,6 +80,11 @@ class _NagigationState extends State<Nagigation> {
                         );
                         break;
                     }
+                    return (!snapshot.hasData)
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Container();
                   })),
         ],
       ),
