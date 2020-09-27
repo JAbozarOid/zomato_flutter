@@ -1,6 +1,6 @@
 import 'package:adobe_xd/pinned.dart';
 import 'package:flutter/material.dart';
-import 'package:zomato/model/fake_restaurant.dart';
+import 'package:zomato/model/fake_restaurant_model.dart';
 import 'package:zomato/ui/detail/detail_like.dart';
 import 'package:zomato/ui/detail/detail_play.dart';
 import 'package:zomato/ui/detail/detail_price.dart';
@@ -13,7 +13,7 @@ import 'detail_name.dart';
 import 'detail_quality.dart';
 
 class PopularDetailScreenFake extends StatefulWidget {
-  final RestaurantModel mRestaurant;
+  final FakeRestaurantModel mRestaurant;
 
   PopularDetailScreenFake({
     @required this.mRestaurant,
@@ -27,7 +27,7 @@ class PopularDetailScreenFake extends StatefulWidget {
 class _PopularDetailScreenFakeState extends State<PopularDetailScreenFake> {
   int count;
 
-  RestaurantModel get mRestaurant => widget.mRestaurant;
+  FakeRestaurantModel get mRestaurant => widget.mRestaurant;
 
   @override
   void initState() {

@@ -27,7 +27,3 @@ class DataRepository {
         endpoint: Endpoint.restaurant, param: param);
   }
 }
-
-class NetworkError extends Error {
-
-}
