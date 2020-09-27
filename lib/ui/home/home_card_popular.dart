@@ -1,13 +1,13 @@
 import 'package:adobe_xd/pinned.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:zomato/model/fake_restaurant.dart';
+import 'package:zomato/model/fake_restaurant_model.dart';
 import 'package:zomato/ui/menu/svg.dart';
 
 
 class HomeCardPopular extends StatelessWidget {
   final Function onTap;
-  final RestaurantModel mRestaurant;
+  final FakeRestaurantModel mRestaurant;
 
   HomeCardPopular({
     @required this.onTap,

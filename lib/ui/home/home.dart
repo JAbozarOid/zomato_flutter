@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zomato/bloc/bloc.dart';
-import 'package:zomato/model/fake_restaurant.dart';
+import 'package:zomato/model/fake_restaurant_model.dart';
 import 'package:zomato/model/nearby_restaurants.dart';
 import 'package:zomato/ui/detail/detail.dart';
 import 'package:zomato/ui/detail/detail_popular_fake.dart';
@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   //List<RestaurantModel> nearYouList;
-  List<RestaurantModel> popularList;
+  List<FakeRestaurantModel> popularList;
 
   double _lat;
   double _lon;
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               itemCount: popularList.length,
               itemBuilder: (context, position) {
-                RestaurantModel mRestaurant = popularList[position];
+                FakeRestaurantModel mRestaurant = popularList[position];
                 return HomeCardPopular(
                   onTap: _onTapPopular,
                   mRestaurant: mRestaurant,
@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
     getNearbyRestaurants();
   }
 
-  void _onTapPopular(RestaurantModel mRestaurant) {
+  void _onTapPopular(FakeRestaurantModel mRestaurant) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => PopularDetailScreenFake(
               mRestaurant: mRestaurant,
@@ -226,8 +226,8 @@ class _HomeScreenState extends State<HomeScreen> {
       isLiked: false,
     )); */
 
-    popularList = List<RestaurantModel>();
-    popularList.add(RestaurantModel(
+    popularList = List<FakeRestaurantModel>();
+    popularList.add(FakeRestaurantModel(
       imageUrl:
           'https://b.zmtcdn.com/data/pictures/8/16774318/b16e382e9f6696f911b600b7e5ca6839.jpg?output-format=webp',
       price: 40.00,
@@ -235,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
       description: 'Fresh hamburger with chicken, salad, tomatoes.',
       isLiked: false,
     ));
-    popularList.add(RestaurantModel(
+    popularList.add(FakeRestaurantModel(
       imageUrl:
           'https://b.zmtcdn.com/data/pictures/8/16774318/b16e382e9f6696f911b600b7e5ca6839.jpg?output-format=webp',
       price: 50.00,
@@ -243,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
       description: 'Fresh hamburger with chicken, salad, tomatoes.',
       isLiked: true,
     ));
-    popularList.add(RestaurantModel(
+    popularList.add(FakeRestaurantModel(
       imageUrl:
           'https://b.zmtcdn.com/data/pictures/8/16774318/b16e382e9f6696f911b600b7e5ca6839.jpg?output-format=webp',
       price: 60.00,
@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
       description: 'Fresh hamburger with chicken, salad, tomatoes.',
       isLiked: true,
     ));
-    popularList.add(RestaurantModel(
+    popularList.add(FakeRestaurantModel(
       imageUrl:
           'https://b.zmtcdn.com/data/pictures/8/16774318/b16e382e9f6696f911b600b7e5ca6839.jpg?output-format=webp',
       price: 70.00,

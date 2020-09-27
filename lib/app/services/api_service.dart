@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:zomato/app/repositories/data_repository.dart';
 import 'package:zomato/app/services/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:zomato/app/services/http_param.dart';
