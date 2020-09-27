@@ -49,23 +49,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
-      _onLocationState.add(LocationState.deny);
-    }
-    if (_permissionGranted == PermissionStatus.granted) {
+      if (_permissionGranted != PermissionStatus.granted) {
+        _onLocationState.add(LocationState.deny);
+      } else {
+        _locationData = await location.getLocation();
+        _lat = _locationData.latitude;
+        _lon = _locationData.longitude;
+        getNearbyRestaurants();
+        _onLocationState.add(LocationState.granted);
+      }
+    } else {
       _locationData = await location.getLocation();
       _lat = _locationData.latitude;
       _lon = _locationData.longitude;
       getNearbyRestaurants();
       _onLocationState.add(LocationState.granted);
-
     }
   }
 
   void getNearbyRestaurants() async {
     final restaurantBloc = BlocProvider.of<RestaurantsBloc>(context);
     restaurantBloc.add(GetNearbyRestaurants(_lat, _lon));
-
-    _onLocationState.add(LocationState.granted);
   }
 
   @override
@@ -95,9 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: StreamBuilder<LocationState>(
                   stream: _onLocationState,
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return buildLoading();
-                    }
+                    print("<<<<the snapshot data is ${snapshot.data}>>>>");
                     switch (snapshot.data) {
                       case LocationState.deny:
                         return Center(
@@ -147,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return buildLoading();
                         break;
                     }
+                    return (!snapshot.hasData) ? buildLoading() : Container();
                   })),
           HomeListTitle(
             title: 'Popular',
