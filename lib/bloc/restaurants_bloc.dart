@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:zomato/app/repositories/data_repository.dart';
@@ -21,23 +22,28 @@ class RestaurantsBloc extends Bloc<RestaurantsEvent, RestaurantsState> {
 
     if (event is GetNearbyRestaurants) {
       try {
-        final restaurants = await dataRepository.nearbyRestaurantAPI(event.lat,event.lon);
+        final restaurants =
+            await dataRepository.nearbyRestaurantAPI(event.lat, event.lon);
         yield RestaurantsLoaded(restaurants);
-      } on NetworkError {
-        yield RestauranstsError("Coudn't fetch restaurants");
+      } on SocketException catch (_) {
+        yield RestauranstsError("Connection Error");
+      } on TimeoutException catch (_) {
+        yield RestauranstsError("Timeout Error, Please Try later");
+      } catch (_) {
+        yield RestauranstsError("Unknown Error");
       }
     } else if (event is GetRestaurantDetail) {
       try {
         final restaurantDetails =
             await dataRepository.restaurantsDetailsAPI(event.resID);
         yield RestaurantDetailLoaded(restaurantDetails);
-      } on NetworkError {
-        yield RestauranstsError("Coudn't fetch restaurants");
+      } on SocketException catch (_) {
+        yield RestauranstsError("Connection Error");
+      } on TimeoutException catch (_) {
+        yield RestauranstsError("Timeout Error, Please Try later");
+      } catch (_) {
+        yield RestauranstsError("Unknown Error");
       }
-      
     }
   }
 }
-
-
-

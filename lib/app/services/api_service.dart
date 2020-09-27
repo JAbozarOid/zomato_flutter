@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:zomato/app/repositories/data_repository.dart';
 import 'package:zomato/app/services/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:zomato/app/services/http_param.dart';
@@ -21,8 +22,9 @@ class APIService {
     print("request for the api $fullURL");
     print("the api key is ${api.apiKey}");
     try {
-      var response =
-          await http.get(fullURL, headers: {'user-key': '${api.apiKey}'});
+      var response = await http.get(fullURL, headers: {
+        'user-key': '${api.apiKey}'
+      }).timeout(Duration(seconds: 15));
       print(
           "the response for the api $fullURL  is ${json.decode(response.body)}");
       if (response.statusCode == 200) {
@@ -34,8 +36,7 @@ class APIService {
       } else {
         print(
             'Request $fullURL failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
-
-        throw Exception('Error getting restaurants');
+        throw response;
       }
     } catch (e) {
       print("The error is ${e.toString()}");
@@ -53,8 +54,9 @@ class APIService {
     print("the api key is ${api.apiKey}");
 
     try {
-      var response =
-          await http.get(fullURL, headers: {'user-key': '${api.apiKey}'});
+      var response = await http.get(fullURL, headers: {
+        'user-key': '${api.apiKey}'
+      }).timeout(Duration(seconds: 15));
       print(
           "the response for the api $fullURL  is ${json.decode(response.body)}");
       if (response.statusCode == 200) {
@@ -64,7 +66,7 @@ class APIService {
       } else {
         print(
             'Request $fullURL failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
-        throw Exception('Error getting restaurants details');
+        throw response;
       }
     } catch (e) {
       print("The error is ${e.toString()}");
