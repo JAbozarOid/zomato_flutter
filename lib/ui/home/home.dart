@@ -124,21 +124,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               } else if (state is RestaurantsLoading) {
                                 return buildLoading();
                               } else if (state is RestaurantsLoaded) {
-                                return ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: state.restaurants.length,
-                                  itemBuilder: (context, position) {
-                                    NearbyRestaurants mRestaurant =
-                                        state.restaurants[position];
-                                    return HomeCard(
-                                      onTap: _onTapNearYou,
-                                      mRestaurant: mRestaurant,
-                                    );
-                                  },
-                                );
+                                if (state.nearbyRestaurants.length > 0) {
+                                  return ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: state.nearbyRestaurants.length,
+                                    itemBuilder: (context, position) {
+                                      NearbyRestaurants mRestaurant =
+                                          state.nearbyRestaurants[position];
+                                      return HomeCard(
+                                        onTap: _onTapNearYou,
+                                        mRestaurant: mRestaurant,
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Text(
+                                        'There are no restaurants nearby you!'),
+                                  );
+                                }
                               } else if (state is RestauranstsError) {
                                 return Center(
-                                  child: Text(state.message,style: TextStyle(color: Colors.red,fontWeight: FontWeight.w900),),
+                                  child: Text(
+                                    state.message,
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w900),
+                                  ),
                                 );
                               }
                             },

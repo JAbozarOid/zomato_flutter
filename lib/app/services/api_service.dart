@@ -3,20 +3,19 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:zomato/app/services/api.dart';
 import 'package:http/http.dart' as http;
-import 'package:zomato/app/services/http_param.dart';
-import 'package:zomato/model/nearby_restaurants.dart';
-import 'package:zomato/model/restaurant.dart';
+import 'package:zomato/app/services/base_http_response.dart';
 
 class APIService {
   final API api;
 
   APIService(this.api);
 
-  Future<List<NearbyRestaurants>> getNearbyRestaurants(
-      {@required Endpoint endpoint, @required HttpParam param}) async {
-    final uri = api.endpointUri(endpoint);
-    var query = param == null ? "" : param.toQuery();
-    var fullURL = uri.toString() + query;
+  Future<BaseHttpResponse> getAPI(
+      {@required String apiVersion,
+      @required String path,
+      @required Map<String, String> queryParameters}) async {
+    final fullURL =
+        Uri.https(API.host, apiVersion + path, queryParameters ?? {});
 
     print("request for the api $fullURL");
     print("the api key is ${api.apiKey}");
@@ -25,51 +24,16 @@ class APIService {
         'user-key': '${api.apiKey}'
       }).timeout(Duration(seconds: 15));
       print(
-          "the response for the api $fullURL  is ${json.decode(response.body)}");
-      if (response.statusCode == 200) {
-        print("<<<<the response code is ${response.statusCode}>>>>");
-        final data = json.decode(response.body);
-        return (data['nearby_restaurants'] as List).map((e) {
-          return NearbyRestaurants.fromJson(e);
-        }).toList();
-      } else {
-        print(
-            'Request $fullURL failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
-        throw response;
-      }
-    } catch (e) {
-      print("The error is ${e.toString()}");
-      return e;
-    }
-  }
+          "the response for the api $fullURL is ${json.decode(response.body)} with status code ${response.statusCode} and reason phrase is ${response.reasonPhrase}");
 
-  Future<Restaurant> getRestaurantDetails(
-      {@required Endpoint endpoint, @required HttpParam param}) async {
-    final uri = api.endpointUri(endpoint);
-    var query = param == null ? "" : param.toQuery();
-    var fullURL = uri.toString() + query;
-
-    print("request for the api $fullURL");
-    print("the api key is ${api.apiKey}");
-
-    try {
-      var response = await http.get(fullURL, headers: {
-        'user-key': '${api.apiKey}'
-      }).timeout(Duration(seconds: 15));
-      print(
-          "the response for the api $fullURL  is ${json.decode(response.body)}");
-      if (response.statusCode == 200) {
-        print("<<<<the response code is ${response.statusCode}>>>>");
-        final data = json.decode(response.body);
-        return Restaurant.fromJson(data);
-      } else {
-        print(
-            'Request $fullURL failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
-        throw response;
-      }
-    } catch (e) {
-      print("The error is ${e.toString()}");
-      return e;
+      return Future.value(BaseHttpResponse(
+          json: json.decode(
+            response.body,
+          ),
+          statusCode: response.statusCode));
+    } catch (error, stack) {
+      print("The error in request $fullURL is $error and $stack");
+      return Future.error(error);
     }
   }
 }

@@ -11,4 +11,14 @@ class Restaurant {
     priceRange = json['price_range'];
     id = json['id'];
   }
+
+  int code;
+  String status;
+  String message;
+
+  Restaurant.fromJsonError(Map<String, dynamic> jsonError) {
+    code = jsonError['code'];
+    status = jsonError['status'];
+    message = jsonError['message'];
+  }
 }
