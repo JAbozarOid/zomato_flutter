@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:zomato/app/services/api_keys.dart';
 
-enum Endpoint { geocode, restaurant }
+enum APIVersions { version }
 
 class API {
   final String apiKey;
@@ -12,14 +12,21 @@ class API {
 
   static final String host = 'developers.zomato.com';
 
-  Uri endpointUri(Endpoint endpoint) => Uri(
-        scheme: 'https',
-        host: host,
-        path: _path[endpoint],
-      );
-
-  static Map<Endpoint, String> _path = {
-    Endpoint.geocode: 'api/v2.1/geocode',
-    Endpoint.restaurant: 'api/v2.1/restaurant'
+  static Map<APIVersions, String> apiVersion = {
+    APIVersions.version: '/api/v2.1',
   };
+}
+
+enum Path { geocode, restaurant }
+
+class PathApi {
+  static String getApiPath(Path path) {
+    switch (path) {
+      case Path.geocode:
+        return "/geocode";
+      case Path.restaurant:
+        return "/restaurant";
+    }
+    return "";
+  }
 }

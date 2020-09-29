@@ -17,10 +17,10 @@ class RestaurantsLoading extends RestaurantsState {
 }
 
 class RestaurantsLoaded extends RestaurantsState {
-  final List<NearbyRestaurants> restaurants;
-  const RestaurantsLoaded(this.restaurants);
+  final List<NearbyRestaurants> nearbyRestaurants;
+  const RestaurantsLoaded(this.nearbyRestaurants);
   @override
-  List<Object> get props => [restaurants];
+  List<Object> get props => [nearbyRestaurants];
 }
 
 class RestaurantDetailLoaded extends RestaurantsState {

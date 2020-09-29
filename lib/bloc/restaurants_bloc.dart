@@ -23,8 +23,17 @@ class RestaurantsBloc extends Bloc<RestaurantsEvent, RestaurantsState> {
     if (event is GetNearbyRestaurants) {
       try {
         final restaurants =
-            await dataRepository.nearbyRestaurantAPI(event.lat, event.lon);
-        yield RestaurantsLoaded(restaurants);
+            await dataRepository.callNearbyRestaurantAPI(event.lat, event.lon);
+        if (restaurants.getEndpointsData.statusCode == 200) {
+          var res = restaurants.getEndpointsData.json['nearby_restaurants'];
+          List<NearbyRestaurants> list =
+              (res as List).map((e) => NearbyRestaurants.fromJson(e)).toList();
+          yield RestaurantsLoaded(list);
+        } else {
+          var errorMessage = NearbyRestaurants.fromJsonError(
+              restaurants.getEndpointsData.json);
+          yield RestauranstsError(errorMessage.message);
+        }
       } on SocketException catch (_) {
         yield RestauranstsError("Connection Error");
       } on TimeoutException catch (_) {
@@ -35,8 +44,16 @@ class RestaurantsBloc extends Bloc<RestaurantsEvent, RestaurantsState> {
     } else if (event is GetRestaurantDetail) {
       try {
         final restaurantDetails =
-            await dataRepository.restaurantsDetailsAPI(event.resID);
-        yield RestaurantDetailLoaded(restaurantDetails);
+            await dataRepository.callRestaurantDetailsAPI(event.resID);
+        if (restaurantDetails.getEndpointsData.statusCode == 200) {
+          var res =
+              Restaurant.fromJson(restaurantDetails.getEndpointsData.json);
+          yield RestaurantDetailLoaded(res);
+        } else {
+          var errorMessage =
+              Restaurant.fromJsonError(restaurantDetails.getEndpointsData.json);
+          yield RestauranstsError(errorMessage.message);
+        }
       } on SocketException catch (_) {
         yield RestauranstsError("Connection Error");
       } on TimeoutException catch (_) {
