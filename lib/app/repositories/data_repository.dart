@@ -40,8 +40,10 @@ class DataRepository {
           apiVersion: API.apiVersion[APIVersions.version],
           path: PathApi.getApiPath(Path.geocode),
           queryParameters: {
-            "lat": lat.toString(),
-            "lon": lon.toString().toString()
+            "lat": "1.3521",
+            "lon": "103.8198"
+            //"lat": lat.toString(),
+            //"lon": lon.toString().toString()
           }),
     ]);
 
