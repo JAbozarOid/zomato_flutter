@@ -1,0 +1,9 @@
+{
+    "rest-client.environmentVariables": {
+        "sandbox": {
+            "baseUrl": "https://developers.zomato.com/api/v2.1",
+            "apiKey": "1e3c349cc25d35cea4a89cf86995cd6b",
+        },
+        "production": {}
+    }
+}
