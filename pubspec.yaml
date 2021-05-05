@@ -24,13 +24,13 @@ dependencies:
   flutter:
     sdk: flutter
 
-  adobe_xd: ^2.0.0
+  adobe_xd: ^2.0.0+1
   cupertino_icons: ^1.0.2
   data_connection_checker: ^0.3.4
   equatable: ^2.0.0
   flutter_bloc: ^7.0.0
   flutter_svg: ^0.21.0+1
-  http: ^0.13.1
+  http: ^0.13.2
   location: ^4.1.1
   rxdart: ^0.26.0
 
